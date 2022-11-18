@@ -1,5 +1,5 @@
 # Chiseled bookshelf animations
-Generate Minecraft pixel art animations using the new block "chiseled bookshelf" and data packs. Check out the demo [here](https://www.reddit.com/user/Rezzorex/comments/yysbsb/bad_apple_recreated_with_minecraft_chiseled/).
+A fun little project to generate Minecraft pixel art animations using the new block "chiseled bookshelf" and data packs. Check out the demo [here](https://www.reddit.com/user/Rezzorex/comments/yysbsb/bad_apple_recreated_with_minecraft_chiseled/).
 
 ![image](https://user-images.githubusercontent.com/73910894/202816365-5e2820d9-0bf1-4ab9-a2a0-d6cb478faf2f.png)
 
