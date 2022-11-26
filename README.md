@@ -15,4 +15,4 @@ A fun little project to generate Minecraft pixel art animations using the new bl
 >pip install numpy
 
 ## Note:
-The data packs generated currently only works on snapshot 22w46a with the "update_1_20" data pack enabled.
+The data packs generated currently only works on snapshot 22w46a or later with the "update_1_20" data pack enabled.
