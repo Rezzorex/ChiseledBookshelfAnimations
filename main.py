@@ -8,10 +8,10 @@ import os
 def main():
     print("Add a video to the same folder as this file and then input the filename below. (e.g. \"BadApple.mp4\")")
     filepath = input("> ")
-    print("\nInput your desired height in blocks.")
-    height = int(input("> ")) * 2
+    print("\nInput your desired height in pixels.")
+    height = int(input("> ")) * 2 + 2
     print("\nInput the duration if you want to trim the video, otherwise leave it blank.")
-    duration = input("Video duration (in seconds): ")
+    duration = input("> ")
     print("\nInput the start coordinates of the canvas.")
     startX = int(input("X: > "))
     startY = int(input("Y: > "))
@@ -48,12 +48,14 @@ def main():
     tick.write("execute if score .current frame <= .max frame run scoreboard players add .current frame 1\nexecute if score .current frame > .max frame run scoreboard players set .current frame 0\n")
     tick.close()
 
+    currentPlacement = dict()
+
     while success:
         success, image = stream.read()
         image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         ret, thresh_hold = cv2.threshold(image, 127, 255, cv2.THRESH_BINARY_INV)
 
-        blocks = {}
+        blocks = dict()
 
         file = open('output/frames/frame' + str(count) + '.mcfunction', 'a')
 
@@ -66,26 +68,30 @@ def main():
         load.close()
 
         for (x, y), pixel in np.ndenumerate(thresh_hold):
-            if not str(math.ceil(math.floor(x + 1) / 3)) + '-' + str(math.ceil(math.floor(y + 1) / 2)) in blocks:
-                blocks[str(math.ceil(math.floor(x + 1) / 3)) + '-' + str(math.ceil(math.floor(y + 1) / 2))] = []
+            currentBlock = str(math.ceil(math.floor(x + 1) / 3)) + '-' + str(math.ceil(math.floor(y + 1) / 2))
+
+            if not currentBlock in blocks:
+                blocks[currentBlock] = []
 
             if pixel > 255 / 2:
-                blocks[str(math.ceil(math.floor(x + 1) / 3)) + '-' + str(math.ceil(math.floor(y + 1) / 2))].append("true")
+                blocks.get(currentBlock).append("true")
             else:
-                blocks[str(math.ceil(math.floor(x + 1) / 3)) + '-' + str(math.ceil(math.floor(y + 1) / 2))].append("false")
+                blocks.get(currentBlock).append("false")
 
-            if len(blocks[str(math.ceil(math.floor(x + 1) / 3)) + '-' + str(math.ceil(math.floor(y + 1) / 2))]) == 6:
-                file.write('# ' + str(math.ceil(math.floor(x + 1) / 3)) + '-' + str(math.ceil(math.floor(y + 1) / 2)) + ':\n')
+            if len(blocks.get(currentBlock)) == 6:
                 command = "setblock " + str(startX + math.ceil(math.floor(y) / 3)) + " " + str(startY - math.ceil(math.floor(x) / 3)) + " " + str(startZ) + " minecraft:chiseled_bookshelf["
+                nbtData = ""
                 i = 0
 
-                for line in blocks[str(math.ceil(math.floor(x + 1) / 3)) + '-' + str(math.ceil(math.floor(y + 1) / 2))]:
+                for line in blocks[currentBlock]:
                     if line == "true":
-                        command = command + "slot_" + str(i) + "_occupied=" + line + ","
+                        nbtData = nbtData + "slot_" + str(i) + "_occupied=" + line + ","
 
                     i += 1
 
-                file.write(command + ']\n\n')
+                if count == 0 or currentPlacement.get(currentBlock) != nbtData:
+                    file.write('# ' + currentBlock + ':\n' + command + nbtData + ']\n\n')
+                    currentPlacement[currentBlock] = nbtData
 
         file.close()
         count += 1
@@ -97,6 +103,7 @@ def main():
 
     print("Done, files saved to the \"output\" folder. Move everything into the \"functions\" folder of your datapack!")
     input("Hit enter to close.")
+
 
 if __name__ == '__main__':
     main()
